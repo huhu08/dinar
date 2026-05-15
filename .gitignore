@@ -40,3 +40,47 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+dinar-angular/
+│
+├── src/
+│   ├── main.ts                        ← نقطة الدخول
+│   ├── index.html
+│   ├── styles.css                     ← CSS عام
+│   │
+│   └── app/
+│       ├── app.component.ts/html      ← Shell (header + nav)
+│       ├── app.routes.ts              ← Lazy-loaded routes
+│       ├── app.config.ts              ← provideRouter
+│       │
+│       ├── core/
+│       │   ├── models/
+│       │   │   ├── transaction.model.ts
+│       │   │   ├── block.model.ts
+│       │   │   ├── wallet.model.ts
+│       │   │   ├── chain-stats.model.ts
+│       │   │   └── index.ts           ← barrel export
+│       │   └── services/
+│       │       ├── blockchain.service.ts   ← محرك البلوكتشين (Signals)
+│       │       └── crypto-util.service.ts  ← SHA-256, UUID, helpers
+│       │
+│       ├── features/
+│       │   ├── dashboard/   ← الرئيسية
+│       │   ├── transfer/    ← إرسال معاملة
+│       │   ├── wallets/     ← إدارة المحافظ
+│       │   ├── mine/        ← تعدين
+│       │   └── sharia/      ← مبادئ الشريعة
+│       │
+│       └── shared/
+│           ├── components/
+│           │   ├── alert/           ← رسائل النجاح/الخطأ
+│           │   ├── badge/           ← الوسوم الملونة
+│           │   ├── halal-note/      ← تنبيه الشريعة
+│           │   ├── hash-display/    ← عرض الـ hash
+│           │   └── block-node/      ← عقدة في سلسلة الكتل
+│           └── pipes/
+│               ├── arabic-time.pipe.ts
+│               └── wallet-name.pipe.ts
+│
+├── angular.json
+├── package.json
+└── tsconfig.json
