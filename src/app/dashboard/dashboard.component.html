@@ -1,0 +1,158 @@
+// src/app/components/dashboard/dashboard.component.ts
+import { Component, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { BlockchainService } from '../../services/blockchain.service';
+import { Block } from '../../models/blockchain.models';
+
+@Component({
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="label">عدد الكتل</div>
+        <div class="value">{{ bc.stats()?.totalBlocks ?? '—' }}</div>
+        <div class="sub">Genesis + مُعدَّن</div>
+      </div>
+      <div class="metric-card">
+        <div class="label">المعاملات</div>
+        <div class="value">{{ bc.stats()?.totalTransactions ?? '—' }}</div>
+        <div class="sub">إجمالي مُسجَّل</div>
+      </div>
+      <div class="metric-card">
+        <div class="label">معلقة</div>
+        <div class="value pending">{{ bc.stats()?.pendingTransactions ?? 0 }}</div>
+        <div class="sub">تنتظر التعدين</div>
+      </div>
+      <div class="metric-card">
+        <div class="label">إجمالي الدنانير</div>
+        <div class="value">{{ bc.stats()?.totalSupply?.toFixed(0) ?? '—' }}</div>
+        <div class="sub">DNR في التداول</div>
+      </div>
+    </div>
+
+    <!-- Chain validity -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">حالة السلسلة</span>
+        <span class="badge" [class]="bc.isChainValid() ? 'badge-green' : 'badge-red'">
+          {{ bc.isChainValid() ? '✓ صحيحة ومتوافقة' : '✗ مخترقة' }}
+        </span>
+      </div>
+      <div class="card-body">
+        <button class="btn btn-outline" style="width:auto;margin:0" (click)="refresh()">
+          ↻ تحديث البيانات
+        </button>
+      </div>
+    </div>
+
+    <!-- Recent blocks -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">آخر الكتل</span>
+      </div>
+      <div class="card-body" style="padding:0">
+        @if (bc.loading()) {
+          <div class="empty-state">جاري التحميل...</div>
+        } @else if (bc.blocks().length === 0) {
+          <div class="empty-state">لا توجد كتل بعد</div>
+        } @else {
+          <table class="table">
+            <thead>
+              <tr>
+                <th>الكتلة</th>
+                <th>Hash</th>
+                <th>المُعدِّن</th>
+                <th>المعاملات</th>
+                <th>Nonce</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (block of recentBlocks(); track block.index) {
+                <tr (click)="selectBlock(block)" class="clickable">
+                  <td><span class="badge badge-green">#{{ block.index }}</span></td>
+                  <td><span class="mono muted" style="font-size:11px">{{ bc.shortHash(block.hash) }}</span></td>
+                  <td><span class="mono" style="font-size:12px">{{ block.miner === 'GENESIS' ? 'Genesis' : bc.walletName(block.miner) }}</span></td>
+                  <td>{{ block.transactions.length }}</td>
+                  <td><span class="mono muted">{{ block.nonce.toLocaleString('ar-SA') }}</span></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </div>
+    </div>
+
+    <!-- Block detail panel -->
+    @if (selected()) {
+      <div class="card detail-panel">
+        <div class="card-header">
+          <span class="card-title">تفاصيل الكتلة #{{ selected()!.index }}</span>
+          <button class="close-btn" (click)="selected.set(null)">✕</button>
+        </div>
+        <div class="card-body">
+          <div class="detail-row">
+            <span class="muted" style="font-size:13px">Hash</span>
+            <span class="hash-text">{{ selected()!.hash }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="muted" style="font-size:13px">Previous Hash</span>
+            <span class="hash-text">{{ selected()!.previousHash }}</span>
+          </div>
+          <div class="grid-2" style="margin-top:12px;gap:10px">
+            <div class="info-box"><div class="muted" style="font-size:11px">Nonce</div><div class="mono" style="font-size:16px;font-weight:600">{{ selected()!.nonce.toLocaleString('ar-SA') }}</div></div>
+            <div class="info-box"><div class="muted" style="font-size:11px">الوقت</div><div style="font-size:14px;font-weight:600">{{ bc.formatTime(selected()!.timestamp) }}</div></div>
+          </div>
+
+          @if (selected()!.transactions.length > 0) {
+            <div style="margin-top:16px;font-size:13px;font-weight:600;margin-bottom:8px">
+              المعاملات ({{ selected()!.transactions.length }})
+            </div>
+            @for (tx of selected()!.transactions; track tx.id) {
+              <div class="tx-item">
+                <span class="badge" [class]="tx.from === 'COINBASE' ? 'badge-green' : 'badge-gold'">
+                  {{ tx.from === 'COINBASE' ? 'مكافأة تعدين' : 'تحويل' }}
+                </span>
+                <span class="mono" style="font-size:13px;font-weight:600;color:var(--green)">{{ tx.amount }} DNR</span>
+                <span class="muted" style="font-size:11px">
+                  {{ tx.from === 'COINBASE' ? '' : bc.walletName(tx.from) + ' ←' }} {{ bc.walletName(tx.to) }}
+                </span>
+              </div>
+            }
+          }
+        </div>
+      </div>
+    }
+  `,
+  styles: [`
+    .pending { color: var(--gold); }
+    .empty-state { padding: 24px; text-align: center; color: var(--muted); font-size: 13px; }
+    .table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .table th { text-align: right; padding: 10px 14px; color: var(--muted); font-weight: 500; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+    .table td { padding: 11px 14px; border-bottom: 1px solid #f0f4f2; }
+    .table tr:last-child td { border-bottom: none; }
+    .clickable { cursor: pointer; }
+    .clickable:hover td { background: #f8fdf9; }
+    .detail-panel { border-color: var(--green); }
+    .close-btn { background: none; border: none; cursor: pointer; font-size: 18px; color: var(--muted); padding: 2px 6px; }
+    .close-btn:hover { color: var(--text); }
+    .detail-row { margin-bottom: 10px; }
+    .info-box { background: var(--bg); border-radius: 8px; padding: 10px 12px; }
+    .tx-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f0f4f2; flex-wrap: wrap; }
+    .tx-item:last-child { border-bottom: none; }
+  `]
+})
+export class DashboardComponent implements OnInit {
+  selected = signal<Block | null>(null);
+
+  recentBlocks = () => [...this.bc.blocks()].reverse().slice(0, 8);
+
+  constructor(public bc: BlockchainService) {}
+
+  ngOnInit(): void { this.bc.loadAll(); }
+
+  refresh(): void { this.bc.loadAll(); }
+
+  selectBlock(b: Block): void { this.selected.set(b); }
+}
