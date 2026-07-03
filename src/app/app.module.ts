@@ -5,12 +5,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { MineComponent } from './mine/mine.component';
+import { TransferComponent } from './transfer/transfer.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     DashboardComponent,
-    MineComponent
+    MineComponent,
+    TransferComponent
   ],
   imports: [
     BrowserModule,
