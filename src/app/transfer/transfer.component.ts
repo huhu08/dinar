@@ -12,26 +12,14 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BlockchainService } from '../../services/blockchain.service';
+//import { BlockchainService } from '../../services/blockchain.service';
 
 @Component({
   selector: 'app-transfer',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  template: '/mine.transfer.html',
-  styles: [`
-    .balance-display {
-      display: flex; justify-content: space-between; align-items: center;
-      background: var(--green-light); border-radius: 8px;
-      padding: 10px 14px; margin-bottom: 14px;
-    }
-    .pending-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 12px 16px; border-bottom: 1px solid #f0f4f2;
-    }
-    .pending-item:last-child { border-bottom: none; }
-    .form-group { margin-bottom: 14px; }
-  `],
+  templateUrl: './transfer.transfer.html',
+  styles: [`./transfer.transfer.sass`],
 })
 export class TransferComponent implements OnInit {
   fromAddr = '';
