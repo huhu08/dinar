@@ -6,13 +6,15 @@ import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { MineComponent } from './mine/mine.component';
 import { TransferComponent } from './transfer/transfer.component';
+import { WalletsComponent } from './wallets/wallets.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     DashboardComponent,
     MineComponent,
-    TransferComponent
+    TransferComponent,
+    WalletsComponent
   ],
   imports: [
     BrowserModule,
