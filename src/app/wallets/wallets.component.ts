@@ -13,31 +13,6 @@ import { Block } from '../../models/blockchain.models';
     
   `,
   styles: [`
-    .form-group { margin-bottom: 14px; }
-    .mining-banner {
-      display: flex; align-items: center; gap: 10px;
-      background: var(--gold-light); border: 1px solid #FAC775;
-      border-radius: 8px; padding: 10px 14px;
-      font-size: 13px; color: #633806; margin-bottom: 14px;
-    }
-    .spinner {
-      width: 16px; height: 16px;
-      border: 2px solid #FAC775; border-top-color: var(--gold);
-      border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .info-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-    .info-box { background: var(--bg); border-radius: 8px; padding: 12px; }
-    .stat-list { display: flex; flex-direction: column; gap: 10px; }
-    .stat-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 0; border-bottom: 1px solid #f0f4f2; font-size: 13px;
-    }
-    .stat-item:last-child { border-bottom: none; }
-    .table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .table th { text-align: right; padding: 10px 14px; color: var(--muted); font-weight: 500; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
-    .table td { padding: 11px 14px; border-bottom: 1px solid #f0f4f2; }
-    .table tr:last-child td { border-bottom: none; }
   `]
 })
 export class MineComponent implements OnInit {
