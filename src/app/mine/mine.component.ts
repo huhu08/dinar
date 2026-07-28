@@ -10,8 +10,7 @@ import { Block } from '../../models/blockchain.models';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: ` `,
-  styles: [`
-  `]
+  styles: [``]
 })
 export class MineComponent implements OnInit {
   minerAddr = '';
