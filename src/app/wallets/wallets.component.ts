@@ -9,11 +9,8 @@ import { Block } from '../../models/blockchain.models';
   selector: 'app-mine',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  template: `
-    
-  `,
-  styles: [`
-  `]
+  template: ``,
+  styles: [``]
 })
 export class MineComponent implements OnInit {
   minerAddr = '';
